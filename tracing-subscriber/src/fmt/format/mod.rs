@@ -409,6 +409,8 @@ pub struct Format<F = Full, T = SystemTime> {
     pub(crate) display_thread_name: bool,
     pub(crate) display_filename: bool,
     pub(crate) display_line_number: bool,
+    pub(crate) display_span: bool,
+    pub(crate) span_filter: Vec<&'static str>,
 }
 
 // === impl Writer ===
@@ -599,6 +601,8 @@ impl Default for Format<Full, SystemTime> {
             display_thread_name: false,
             display_filename: false,
             display_line_number: false,
+            display_span: true,
+            span_filter: Vec::new(),
         }
     }
 }
@@ -619,6 +623,8 @@ impl<F, T> Format<F, T> {
             display_thread_name: self.display_thread_name,
             display_filename: self.display_filename,
             display_line_number: self.display_line_number,
+            display_span: self.display_span,
+            span_filter: self.span_filter,
         }
     }
 
@@ -658,6 +664,8 @@ impl<F, T> Format<F, T> {
             display_thread_name: self.display_thread_name,
             display_filename: true,
             display_line_number: true,
+            display_span: self.display_span,
+            span_filter: self.span_filter,
         }
     }
 
@@ -689,6 +697,8 @@ impl<F, T> Format<F, T> {
             display_thread_name: self.display_thread_name,
             display_filename: self.display_filename,
             display_line_number: self.display_line_number,
+            display_span: self.display_span,
+            span_filter: self.span_filter,
         }
     }
 
@@ -718,6 +728,8 @@ impl<F, T> Format<F, T> {
             display_thread_name: self.display_thread_name,
             display_filename: self.display_filename,
             display_line_number: self.display_line_number,
+            display_span: self.display_span,
+            span_filter: self.span_filter,
         }
     }
 
@@ -734,6 +746,8 @@ impl<F, T> Format<F, T> {
             display_thread_name: self.display_thread_name,
             display_filename: self.display_filename,
             display_line_number: self.display_line_number,
+            display_span: self.display_span,
+            span_filter: self.span_filter,
         }
     }
 
@@ -813,6 +827,20 @@ impl<F, T> Format<F, T> {
     pub fn with_source_location(self, display_location: bool) -> Self {
         self.with_line_number(display_location)
             .with_file(display_location)
+    }
+
+    pub fn with_span(self, display_span: bool) -> Format<F, T> {
+        Format {
+            display_span,
+            ..self
+        }
+    }
+
+    pub fn with_span_filter(self, span_filter: Vec<&'static str>) -> Format<F, T> {
+        Format {
+            span_filter,
+            ..self
+        }
     }
 
     #[inline]
@@ -958,28 +986,40 @@ where
 
         let dimmed = writer.dimmed();
 
-        if let Some(scope) = ctx.event_scope() {
-            let bold = writer.bold();
+        if self.display_span {
+            if let Some(scope) = ctx.event_scope() {
+                let mut seen = false;
 
-            let mut seen = false;
+                for span in scope.from_root() {
+                    let span_name = span.metadata().name();
+                    let is_filtered = |name: &str| !self.span_filter.is_empty() && !self.span_filter.contains(&name);
+                    if is_filtered(span_name) {
+                        continue;
+                    }
 
-            for span in scope.from_root() {
-                write!(writer, "{}", bold.paint(span.metadata().name()))?;
-                seen = true;
+                    let capitalized = span_name.get(0..1).map(|c| c.to_uppercase()).unwrap_or_default();
+                    write!(writer, "{}:", capitalized)?;
 
-                let ext = span.extensions();
-                if let Some(fields) = &ext.get::<FormattedFields<N>>() {
-                    if !fields.is_empty() {
-                        write!(writer, "{}{}{}", bold.paint("{"), fields, bold.paint("}"))?;
+                    seen = true;
+
+                    let ext = span.extensions();
+                    if let Some(fields) = &ext.get::<FormattedFields<N>>() {
+                        if !fields.is_empty() {
+                            let trimmed = fields
+                                .parse_value("name")
+                                .map(|e| e.rsplit_once("::").map(|(_, n)| n).unwrap_or(e))
+                                .unwrap_or("unknown");
+                            write!(writer, "{}", trimmed)?;
+                        }
                     }
                 }
-                write!(writer, "{}", dimmed.paint(":"))?;
-            }
 
-            if seen {
-                writer.write_char(' ')?;
-            }
-        };
+                if seen {
+                    writer.write_char(' ')?;
+                }
+            };
+        }
+
 
         if self.display_target {
             write!(
