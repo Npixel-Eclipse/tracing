@@ -988,8 +988,6 @@ where
 
         if self.display_span {
             if let Some(scope) = ctx.event_scope() {
-                let mut seen = false;
-
                 for span in scope.from_root() {
                     let span_name = span.metadata().name();
                     let is_filtered = |name: &str| !self.span_filter.is_empty() && !self.span_filter.contains(&name);
@@ -997,24 +995,20 @@ where
                         continue;
                     }
 
-                    let capitalized = span_name.get(0..1).map(|c| c.to_uppercase()).unwrap_or_default();
-                    write!(writer, "{}:", capitalized)?;
-
-                    seen = true;
-
                     let ext = span.extensions();
                     if let Some(fields) = &ext.get::<FormattedFields<N>>() {
                         if !fields.is_empty() {
+
+                            write!(writer, "{}:", span_name)?;
+
                             let trimmed = fields
-                                .parse_value("name")
+                                .parse_value()
                                 .map(|e| e.rsplit_once("::").map(|(_, n)| n).unwrap_or(e))
                                 .unwrap_or("unknown");
-                            write!(writer, "{}", trimmed)?;
+
+                            write!(writer, "[{}]", trimmed)?;
                         }
                     }
-                }
-
-                if seen {
                     writer.write_char(' ')?;
                 }
             };

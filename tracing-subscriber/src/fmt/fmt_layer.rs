@@ -759,11 +759,11 @@ impl<E: ?Sized> FormattedFields<E> {
         format::Writer::new(&mut self.fields).with_ansi(self.was_ansi)
     }
 
-    pub fn parse_value(&self, key: &str) -> Option<&str> {
-        let key = format!("{key}=");
+    pub fn parse_value(&self) -> Option<&str> {
         self.fields
-            .strip_prefix(key.as_str())
-            .map(|stripped| stripped.trim_matches('"'))
+            .split_once("\"")
+            .and_then(|(_, rest)| rest.rsplit_once("\""))
+            .map(|(value, _)| value)
     }
 }
 
