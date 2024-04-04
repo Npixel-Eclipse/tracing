@@ -410,7 +410,7 @@ pub struct Format<F = Full, T = SystemTime> {
     pub(crate) display_filename: bool,
     pub(crate) display_line_number: bool,
     pub(crate) display_span: bool,
-    pub(crate) span_filter: Vec<&'static str>,
+    pub(crate) span_filter: Vec<String>,
 }
 
 // === impl Writer ===
@@ -836,7 +836,7 @@ impl<F, T> Format<F, T> {
         }
     }
 
-    pub fn with_span_filter(self, span_filter: Vec<&'static str>) -> Format<F, T> {
+    pub fn with_span_filter(self, span_filter: Vec<String>) -> Format<F, T> {
         Format {
             span_filter,
             ..self
@@ -989,9 +989,9 @@ where
         if self.display_span {
             if let Some(scope) = ctx.event_scope() {
                 for span in scope.from_root() {
-                    let span_name = span.metadata().name();
-                    let is_filtered = |name: &str| !self.span_filter.is_empty() && !self.span_filter.contains(&name);
-                    if is_filtered(span_name) {
+                    let span_name = span.metadata().name().to_string();
+                    let is_filtered = |name: &String| !self.span_filter.is_empty() && !self.span_filter.contains(name);
+                    if is_filtered(&span_name) {
                         continue;
                     }
 
