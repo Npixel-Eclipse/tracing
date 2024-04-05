@@ -49,12 +49,10 @@ syn = { version = "2.0", default-features = false, features = [
 quote = "1.0.20"
 
 [dev-dependencies]
-tracing = { path = "../tracing", version = "0.1.35" }
+tracing = { version = "0.1.35" }
 tracing-mock = { path = "../tracing-mock" }
+tracing-subscriber = { version = "0.3.0", features = ["env-filter"] }
 tokio-test = "0.4.2"
-tracing-subscriber = { path = "../tracing-subscriber", version = "0.3.0", features = [
-    "env-filter",
-] }
 tracing-test = { path = "../tracing-test" }
 async-trait = "0.1.67"
 trybuild = "1.0.64"
