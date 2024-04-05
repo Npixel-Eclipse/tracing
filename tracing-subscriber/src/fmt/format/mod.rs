@@ -986,35 +986,6 @@ where
 
         let dimmed = writer.dimmed();
 
-        if self.display_span {
-            if let Some(scope) = ctx.event_scope() {
-                for span in scope.from_root() {
-                    let span_name = span.metadata().name().to_string();
-                    let is_filtered = |name: &String| !self.span_filter.is_empty() && !self.span_filter.contains(name);
-                    if is_filtered(&span_name) {
-                        continue;
-                    }
-
-                    let ext = span.extensions();
-                    if let Some(fields) = &ext.get::<FormattedFields<N>>() {
-                        if !fields.is_empty() {
-
-                            write!(writer, "{}:", span_name)?;
-
-                            let trimmed = fields
-                                .parse_value()
-                                .map(|e| e.rsplit_once("::").map(|(_, n)| n).unwrap_or(e))
-                                .unwrap_or("unknown");
-
-                            write!(writer, "[{}]", trimmed)?;
-                        }
-                    }
-                    writer.write_char(' ')?;
-                }
-            };
-        }
-
-
         if self.display_target {
             write!(
                 writer,
@@ -1050,6 +1021,34 @@ where
                 line_number,
                 dimmed.suffix()
             )?;
+        }
+
+        if self.display_span {
+            if let Some(scope) = ctx.event_scope() {
+                for span in scope.from_root() {
+                    let span_name = span.metadata().name().to_string();
+                    let is_filtered = |name: &String| !self.span_filter.is_empty() && !self.span_filter.contains(name);
+                    if is_filtered(&span_name) {
+                        continue;
+                    }
+
+                    let ext = span.extensions();
+                    if let Some(fields) = &ext.get::<FormattedFields<N>>() {
+                        if !fields.is_empty() {
+
+                            write!(writer, "{}:", span_name)?;
+
+                            let trimmed = fields
+                                .parse_value()
+                                .map(|e| e.rsplit_once("::").map(|(_, n)| n).unwrap_or(e))
+                                .unwrap_or("unknown");
+
+                            write!(writer, "[{}]", trimmed)?;
+                        }
+                    }
+                    writer.write_char(' ')?;
+                }
+            };
         }
 
         ctx.format_fields(writer.by_ref(), event)?;
