@@ -1033,16 +1033,16 @@ where
                     }
 
                     let ext = span.extensions();
-                    if let Some(fields) = &ext.get::<FormattedFields<N>>() {
-                        if !fields.is_empty() {
-
+                    if let Some(formatted_fields) = &ext.get::<FormattedFields<N>>() {
+                        if !formatted_fields.is_empty() {
                             write!(writer, "{}:", span_name)?;
-
-                            let trimmed = fields
+                            let fields = formatted_fields
                                 .parse_value()
-                                .map(|e| e.rsplit_once("::").map(|(_, n)| n).unwrap_or(e))
-                                .unwrap_or("unknown");
-
+                                .unwrap_or(formatted_fields.fields.as_str());
+                            let trimmed = fields
+                                .rsplit_once("::")
+                                .map(|(_, n)| n)
+                                .unwrap_or(fields);
                             write!(writer, "[{}]", trimmed)?;
                         }
                     }
