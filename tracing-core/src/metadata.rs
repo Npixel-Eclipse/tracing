@@ -191,7 +191,7 @@ pub struct Kind(u8);
 ///         // ...
 ///         # drop(span); Id::from_u64(1)
 ///     }
-
+///
 ///     fn event(&self, event: &Event<'_>) {
 ///         // ...
 ///         # drop(event);
@@ -332,7 +332,7 @@ impl<'a> Metadata<'a> {
     }
 }
 
-impl<'a> fmt::Debug for Metadata<'a> {
+impl fmt::Debug for Metadata<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut meta = f.debug_struct("Metadata");
         meta.field("name", &self.name)
@@ -377,7 +377,7 @@ impl Kind {
     pub const SPAN: Kind = Kind(Self::SPAN_BIT);
 
     /// `enabled!` callsite. [`Subscriber`][`crate::subscriber::Subscriber`]s can assume
-    /// this `Kind` means they will never recieve a
+    /// this `Kind` means they will never receive a
     /// full event with this [`Metadata`].
     pub const HINT: Kind = Kind(Self::HINT_BIT);
 
@@ -440,9 +440,9 @@ impl fmt::Debug for Kind {
     }
 }
 
-impl<'a> Eq for Metadata<'a> {}
+impl Eq for Metadata<'_> {}
 
-impl<'a> PartialEq for Metadata<'a> {
+impl PartialEq for Metadata<'_> {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
         if core::ptr::eq(&self, &other) {

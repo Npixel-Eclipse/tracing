@@ -26,10 +26,10 @@
 //!
 //! - `traced-error` - Enables the [`TracedError`] type and related Traits
 //!     - [`InstrumentResult`] and [`InstrumentError`] extension traits, which
-//!     provide an [`in_current_span()`] method for bundling errors with a
-//!     [`SpanTrace`].
+//!       provide an [`in_current_span()`] method for bundling errors with a
+//!       [`SpanTrace`].
 //!     - [`ExtractSpanTrace`] extension trait, for extracting `SpanTrace`s from
-//!     behind `dyn Error` trait objects.
+//!       behind `dyn Error` trait objects.
 //!
 //! ## Usage
 //!
@@ -183,6 +183,7 @@
     html_logo_url = "https://raw.githubusercontent.com/tokio-rs/tracing/master/assets/logo-type.png",
     issue_tracker_base_url = "https://github.com/tokio-rs/tracing/issues/"
 )]
+#![allow(clippy::needless_doctest_main)]
 #![warn(
     missing_debug_implementations,
     missing_docs,
@@ -196,7 +197,8 @@
     overflowing_literals,
     path_statements,
     patterns_in_fns_without_body,
-    private_in_public,
+    private_interfaces,
+    private_bounds,
     unconditional_recursion,
     unused,
     unused_allocation,

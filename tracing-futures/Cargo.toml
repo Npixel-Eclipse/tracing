@@ -31,7 +31,7 @@ futures_01 = { package = "futures", version = "0.1.31", optional = true }
 futures = { version = "0.3.21", optional = true }
 futures-task = { version = "0.3.21", optional = true }
 pin-project-lite = { version = "0.2.9", optional = true }
-tracing = { version = "0.1.35", default-features = false }
+tracing = { path = "../tracing", version = "0.1.35", default-features = false }
 tokio-executor = { version = "0.1.10", optional = true }
 tokio_01 = { package = "tokio", version = "0.1.22", optional = true }
 
@@ -42,8 +42,9 @@ mio = { version = "0.6.23", optional = true }
 [dev-dependencies]
 futures = "0.3.21"
 tokio-test = "0.4.2"
-tracing-core = { version = "0.1.28" }
-tracing-mock = { path = "../tracing-mock", features = ["tokio-test"] }
+tracing-core = { path = "../tracing-core", version = "0.1.28" }
+tracing-mock = { path = "../tracing-mock" }
+tracing-test = { path = "../tracing-test" }
 
 [badges]
 maintenance = { status = "actively-developed" }
@@ -51,3 +52,6 @@ maintenance = { status = "actively-developed" }
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true

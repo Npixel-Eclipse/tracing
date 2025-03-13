@@ -43,7 +43,7 @@
 //! ```toml
 //! [dependencies]
 //! tracing = "0.1"
-//! tracing-serde = "0.1"
+//! tracing-serde = "0.2"
 //! ```
 //!
 //! Next, add this to your crate:
@@ -75,6 +75,12 @@
 //!     next_id: AtomicUsize, // you need to assign span IDs, so you need a counter
 //! }
 //!
+//! impl JsonSubscriber {
+//!     fn new() -> Self {
+//!         Self { next_id: 1.into() }
+//!     }
+//! }
+//!
 //! impl Subscriber for JsonSubscriber {
 //!
 //!     fn new_span(&self, attrs: &Attributes<'_>) -> Id {
@@ -97,7 +103,7 @@
 //!     }
 //!
 //!     // ...
-//!     # fn enabled(&self, _: &Metadata<'_>) -> bool { false }
+//!     # fn enabled(&self, _: &Metadata<'_>) -> bool { true }
 //!     # fn enter(&self, _: &Id) {}
 //!     # fn exit(&self, _: &Id) {}
 //!     # fn record(&self, _: &Id, _: &Record<'_>) {}
@@ -174,7 +180,8 @@
     overflowing_literals,
     path_statements,
     patterns_in_fns_without_body,
-    private_in_public,
+    private_interfaces,
+    private_bounds,
     unconditional_recursion,
     unused,
     unused_allocation,
@@ -199,9 +206,9 @@ use tracing_core::{
 pub mod fields;
 
 #[derive(Debug)]
-pub struct SerializeField(Field);
+pub struct SerializeField<'a>(&'a Field);
 
-impl Serialize for SerializeField {
+impl Serialize for SerializeField<'_> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -213,14 +220,14 @@ impl Serialize for SerializeField {
 #[derive(Debug)]
 pub struct SerializeFieldSet<'a>(&'a FieldSet);
 
-impl<'a> Serialize for SerializeFieldSet<'a> {
+impl Serialize for SerializeFieldSet<'_> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.0.len()))?;
         for element in self.0 {
-            seq.serialize_element(element.name())?;
+            seq.serialize_element(&SerializeField(&element))?;
         }
         seq.end()
     }
@@ -229,7 +236,7 @@ impl<'a> Serialize for SerializeFieldSet<'a> {
 #[derive(Debug)]
 pub struct SerializeLevel<'a>(&'a Level);
 
-impl<'a> Serialize for SerializeLevel<'a> {
+impl Serialize for SerializeLevel<'_> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -253,7 +260,7 @@ impl<'a> Serialize for SerializeLevel<'a> {
 #[derive(Debug)]
 pub struct SerializeId<'a>(&'a Id);
 
-impl<'a> Serialize for SerializeId<'a> {
+impl Serialize for SerializeId<'_> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -267,7 +274,7 @@ impl<'a> Serialize for SerializeId<'a> {
 #[derive(Debug)]
 pub struct SerializeMetadata<'a>(&'a Metadata<'a>);
 
-impl<'a> Serialize for SerializeMetadata<'a> {
+impl Serialize for SerializeMetadata<'_> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -290,7 +297,7 @@ impl<'a> Serialize for SerializeMetadata<'a> {
 #[derive(Debug)]
 pub struct SerializeEvent<'a>(&'a Event<'a>);
 
-impl<'a> Serialize for SerializeEvent<'a> {
+impl Serialize for SerializeEvent<'_> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -310,7 +317,7 @@ impl<'a> Serialize for SerializeEvent<'a> {
 #[derive(Debug)]
 pub struct SerializeAttributes<'a>(&'a Attributes<'a>);
 
-impl<'a> Serialize for SerializeAttributes<'a> {
+impl Serialize for SerializeAttributes<'_> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -333,7 +340,7 @@ impl<'a> Serialize for SerializeAttributes<'a> {
 #[derive(Debug)]
 pub struct SerializeRecord<'a>(&'a Record<'a>);
 
-impl<'a> Serialize for SerializeRecord<'a> {
+impl Serialize for SerializeRecord<'_> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -563,6 +570,14 @@ impl<'a> AsSerde<'a> for Level {
     }
 }
 
+impl<'a> AsSerde<'a> for Field {
+    type Serializable = SerializeField<'a>;
+
+    fn as_serde(&'a self) -> Self::Serializable {
+        SerializeField(self)
+    }
+}
+
 impl<'a> AsSerde<'a> for FieldSet {
     type Serializable = SerializeFieldSet<'a>;
 
@@ -571,17 +586,19 @@ impl<'a> AsSerde<'a> for FieldSet {
     }
 }
 
-impl<'a> self::sealed::Sealed for Event<'a> {}
+impl self::sealed::Sealed for Event<'_> {}
 
-impl<'a> self::sealed::Sealed for Attributes<'a> {}
+impl self::sealed::Sealed for Attributes<'_> {}
 
 impl self::sealed::Sealed for Id {}
 
 impl self::sealed::Sealed for Level {}
 
-impl<'a> self::sealed::Sealed for Record<'a> {}
+impl self::sealed::Sealed for Record<'_> {}
 
-impl<'a> self::sealed::Sealed for Metadata<'a> {}
+impl self::sealed::Sealed for Metadata<'_> {}
+
+impl self::sealed::Sealed for Field {}
 
 impl self::sealed::Sealed for FieldSet {}
 
