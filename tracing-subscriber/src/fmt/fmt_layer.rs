@@ -780,11 +780,16 @@ impl<E: ?Sized> FormattedFields<E> {
         format::Writer::new(&mut self.fields).with_ansi(self.was_ansi)
     }
 
-    pub fn parse_value(&self) -> Option<&str> {
-        self.fields
+    pub fn parse_value(&self) -> &str {
+        let l_trimmed = self.fields
             .split_once("\"")
-            .and_then(|(_, rest)| rest.rsplit_once("\""))
-            .map(|(value, _)| value)
+            .map(|(_, rest)| rest)
+            .unwrap_or(&self.fields);
+        let r_trimmed = l_trimmed
+            .rsplit_once("\"")
+            .map(|(rest, _)| rest)
+            .unwrap_or(l_trimmed);
+        r_trimmed
     }
 }
 
