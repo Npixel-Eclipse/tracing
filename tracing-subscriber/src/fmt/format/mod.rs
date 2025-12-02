@@ -36,6 +36,7 @@ use crate::{
     registry::LookupSpan,
 };
 
+use alloc::{string::{String, ToString}, vec::Vec};
 use std::fmt::{self, Debug, Display, Write};
 use tracing_core::{
     field::{self, Field, Visit},
