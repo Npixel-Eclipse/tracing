@@ -4,10 +4,10 @@ use crate::{
     layer::{self, Context},
     registry::{self, LookupSpan, SpanRef},
 };
+use alloc::{fmt, format, string::String};
+use core::{any::TypeId, marker::PhantomData, ops::Deref};
 use format::{FmtSpan, TimingDisplay};
-use std::{
-    any::TypeId, cell::RefCell, env, fmt, io, marker::PhantomData, ops::Deref, time::Instant,
-};
+use std::{cell::RefCell, env, eprintln, io, thread_local, time::Instant};
 use tracing_core::{
     field,
     span::{Attributes, Current, Id, Record},
@@ -1269,6 +1269,7 @@ mod test {
         time,
     };
     use crate::Registry;
+    use alloc::{string::ToString, vec, vec::Vec};
     use format::FmtSpan;
     use regex::Regex;
     use tracing::subscriber::with_default;
@@ -1643,8 +1644,7 @@ mod test {
             .with_timer(MockTime)
             .with_span_events(FmtSpan::ACTIVE);
 
-        let (reloadable_layer, reload_handle) =
-            crate::reload::Layer::new(inner_layer);
+        let (reloadable_layer, reload_handle) = crate::reload::Layer::new(inner_layer);
         let reload = reloadable_layer.with_subscriber(Registry::default());
 
         with_default(reload, || {

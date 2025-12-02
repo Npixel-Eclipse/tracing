@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="EMPTY_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/examples/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-appender/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-appender/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-attributes/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-attributes/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-core/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-core/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-error/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-flame/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-flame/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-futures/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-futures/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-journald/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-journald/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-log/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-log/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-log/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-macros/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-macros/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-mock/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-mock/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-serde/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-subscriber/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-subscriber/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-subscriber/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-test/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing-tower/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tracing/tests" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
